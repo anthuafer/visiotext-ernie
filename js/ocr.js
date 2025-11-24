@@ -1,19 +1,27 @@
 // js/ocr.js
-// Replace OCR_ENDPOINT with your backend/serverless that calls PaddleOCR‑VL.
-// The server should accept PDF and return structured layout JSON.
+// Ejemplo de consumo del endpoint PaddleOCR-VL en Apify
 
-const OCR_ENDPOINT = 'https://your-backend.example.com/ocr'; // TODO
+const API_TOKEN = process.env.API_TOKEN;
+const OCR_ENDPOINT = `https://api.apify.com/v2/acts/yeekal~paddleocr-vl/runs?token=${API_TOKEN}`;
 
+/**
+ * Envía un PDF al endpoint de PaddleOCR-VL y devuelve el JSON con texto y layout.
+ * @param {File} file - Archivo PDF seleccionado por el usuario
+ * @returns {Promise<Object>} OCR JSON con bloques de texto, tablas, imágenes, etc.
+ */
 export async function extractOCR(file) {
-  const form = new FormData();
-  form.append('file', file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-  const resp = await fetch(OCR_ENDPOINT, {
-    method: 'POST',
-    body: form
+  const response = await fetch(OCR_ENDPOINT, {
+    method: "POST",
+    body: formData,
   });
 
-  if (!resp.ok) throw new Error('OCR request failed');
-  const data = await resp.json();
-  return data; // Expected schema: { pages: [ { number, blocks: [ {type, text, bbox, ...} ] } ] }
+  if (!response.ok) {
+    throw new Error("Error en la petición OCR");
+  }
+
+  const data = await response.json();
+  return data; // JSON con estructura: { pages: [ { blocks: [...] } ] }
 }
