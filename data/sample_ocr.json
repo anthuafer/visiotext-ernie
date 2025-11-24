@@ -1,0 +1,39 @@
+{
+  "pages": [
+    {
+      "number": 1,
+      "blocks": [
+        {
+          "type": "heading1",
+          "text": "Informe de Ejemplo",
+          "bbox": [40, 60, 600, 110]
+        },
+        {
+          "type": "paragraph",
+          "text": "Este documento demuestra el flujo PDF → Markdown → HTML.",
+          "bbox": [40, 130, 600, 170]
+        },
+        {
+          "type": "list-item",
+          "text": "Objetivo: accesibilidad",
+          "bbox": [40, 190, 600, 210]
+        },
+        {
+          "type": "list-item",
+          "text": "Velocidad: carga estática",
+          "bbox": [40, 210, 600, 230]
+        },
+        {
+          "type": "table",
+          "table": [
+            ["Campo", "Valor"],
+            ["Total", "123"],
+            ["Estado", "Aprobado"]
+          ],
+          "bbox": [40, 260, 600, 340]
+        },
+        { "type": "math", "text": "E = mc^2", "bbox": [40, 360, 600, 380] }
+      ]
+    }
+  ]
+}
