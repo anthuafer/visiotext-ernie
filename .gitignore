@@ -1,0 +1,15 @@
+# Ignorar variables de entorno
+.env
+
+# Ignorar logs
+*.log
+
+# Ignorar archivos temporales
+*.tmp
+*.swp
+
+# Ignorar directorios de dependencias (si usas npm o similar)
+node_modules/
+
+# Ignorar datos sensibles
+data/*.json
