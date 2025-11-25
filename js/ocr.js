@@ -1,24 +1,48 @@
 async function runOCR(imageData) {
   try {
-    // Llamada a tu función serverless en Netlify
-    const response = await fetch("/.netlify/functions/ocr-proxy", {
+    // Paso 1: iniciar ejecución
+    const startRes = await fetch("/.netlify/functions/ocr-proxy", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: imageData })
+      body: JSON.stringify({ image: imageData }),
     });
+    const { runId, datasetId } = await startRes.json();
 
-    if (!response.ok) {
-      throw new Error("Error en la llamada al proxy OCR");
+    document.getElementById(
+      "ocr-output"
+    ).textContent = `Ejecución iniciada: ${runId}`;
+
+    // Paso 2: polling al proxy de estado
+    let status = "READY";
+    let result = null;
+
+    while (status !== "SUCCEEDED" && status !== "FAILED") {
+      await new Promise((r) => setTimeout(r, 3000)); // esperar 3s
+
+      const checkRes = await fetch("/.netlify/functions/ocr-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId, datasetId }),
+      });
+
+      const checkData = await checkRes.json();
+      status = checkData.status;
+      result = checkData.result;
+
+      document.getElementById("ocr-output").textContent = `Estado: ${status}`;
     }
 
-    const result = await response.json();
-    console.log("Resultado OCR:", result);
-
-    // Aquí puedes renderizar el resultado en tu página
-    document.getElementById("ocr-output").textContent = JSON.stringify(result, null, 2);
-
-    return result;
+    if (status === "SUCCEEDED") {
+      document.getElementById("ocr-output").textContent = JSON.stringify(
+        result,
+        null,
+        2
+      );
+    } else {
+      document.getElementById("ocr-output").textContent = "La ejecución falló.";
+    }
   } catch (error) {
-    console.error("Error en runOCR:", error);
+    document.getElementById("ocr-output").textContent =
+      "Error: " + error.message;
   }
 }
