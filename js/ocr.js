@@ -1,27 +1,24 @@
-// js/ocr.js
-// Ejemplo de consumo del endpoint PaddleOCR-VL en Apify
+async function runOCR(imageData) {
+  try {
+    // Llamada a tu función serverless en Netlify
+    const response = await fetch("/.netlify/functions/ocr-proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: imageData })
+    });
 
-const API_TOKEN = process.env.API_TOKEN;
-const OCR_ENDPOINT = `https://api.apify.com/v2/acts/yeekal~paddleocr-vl/runs?token=${API_TOKEN}`;
+    if (!response.ok) {
+      throw new Error("Error en la llamada al proxy OCR");
+    }
 
-/**
- * Envía un PDF al endpoint de PaddleOCR-VL y devuelve el JSON con texto y layout.
- * @param {File} file - Archivo PDF seleccionado por el usuario
- * @returns {Promise<Object>} OCR JSON con bloques de texto, tablas, imágenes, etc.
- */
-export async function extractOCR(file) {
-  const formData = new FormData();
-  formData.append("file", file);
+    const result = await response.json();
+    console.log("Resultado OCR:", result);
 
-  const response = await fetch(OCR_ENDPOINT, {
-    method: "POST",
-    body: formData,
-  });
+    // Aquí puedes renderizar el resultado en tu página
+    document.getElementById("ocr-output").textContent = JSON.stringify(result, null, 2);
 
-  if (!response.ok) {
-    throw new Error("Error en la petición OCR");
+    return result;
+  } catch (error) {
+    console.error("Error en runOCR:", error);
   }
-
-  const data = await response.json();
-  return data; // JSON con estructura: { pages: [ { blocks: [...] } ] }
 }

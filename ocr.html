@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>VisioText Ernie - OCR Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #ocr-output {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #007acc;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        input[type="file"] {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>VisioText Ernie - OCR Demo</h1>
+    <p>Selecciona una imagen para procesar con OCR:</p>
+
+    <!-- Input para subir archivo -->
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="handleFile()">Procesar OCR</button>
+
+    <!-- Área para mostrar resultados -->
+    <pre id="ocr-output">Esperando resultado...</pre>
+
+    <script>
+        // Convierte archivo a Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(",")[1]); // solo la parte base64
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleFile() {
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length === 0) {
+                alert("Por favor selecciona una imagen.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const base64Image = await fileToBase64(file);
+
+            runOCR(base64Image);
+        }
+    </script>
+    <script src="js/ocr.js"></script>
+</body>
+</html>
